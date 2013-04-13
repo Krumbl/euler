@@ -1,0 +1,82 @@
+#!/usr/bin/perl
+
+use strict;
+
+my @primes = (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97);
+
+my @f = factors(284);
+print "@f\n";
+
+my @d;
+
+#divisors(@f);
+
+foreach my $i (1 .. 10000) {
+	push (@d, [divisors(factors($i))]);
+	print "$i: @{$d[$i - 1]}\n";
+}
+
+
+exit;
+
+sub divisors {
+	my @factors = @_;
+
+#	my %tmp;
+#	for (my $i = 0; $i < scalar @factors; $i++) {	
+#		$tmp{$i} = $factors[$i];
+#	}
+#	foreach (keys %tmp) {
+#		print $tmp{$_};
+#		print "\n";
+#	}
+
+	my %ret;
+
+	foreach my $i (1 .. (2 ** @factors) - 2) {
+		my $bin = sprintf("%b", $i);
+#		print "$i=$bin\n";
+		
+		my @bb = reverse(split(//, $bin));
+
+		my $v = 1;
+		for (my $j = 0; $j < scalar @bb; $j++) {
+#			print "$j: $bb[$j]\n";
+			if ($bb[$j]) {
+#				print "v: $v\n";
+				$v *= $factors[$j];
+			}
+		}
+		if ($v != 1) {
+			$ret{$v} = $v;
+		}
+
+	}	
+	
+#	foreach (keys %ret) {
+#		print $ret{$_};
+#		print "\n";
+#	}
+	print keys %ret;
+	print "\n";
+	return (1, sort { $a <=> $b } keys %ret);
+}
+
+
+sub factors {
+	my $num = shift @_;
+
+	my @factors;
+	
+	while ($num != 1) {
+FOO: 		foreach my $p (@primes) {
+			if ($num % $p == 0) {
+				push(@factors, $p);
+				$num /= $p;
+				last FOO;
+			}
+		}
+	}
+	
+	return @factors;
+}
